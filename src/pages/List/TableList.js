@@ -38,7 +38,16 @@ const getValue = obj =>
     .join(',');
 const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['关闭', '运行中', '已上线', '异常'];
-
+// @liuhaoyi 存储在上一次查询的参数；
+let queryParams = {};
+// @liuhaoyi; 回调并加载更新后的数据；
+const callback = (dispatch, _queryParams) => {
+  return () =>
+    dispatch({
+      type: 'rule/fetch',
+      payload: _queryParams,
+    });
+};
 const CreateForm = Form.create()(props => {
   const { modalVisible, form, handleAdd, handleModalVisible } = props;
   const okHandle = () => {
@@ -81,11 +90,12 @@ class UpdateForm extends PureComponent {
         name: props.values.name,
         desc: props.values.desc,
         key: props.values.key,
-        target: '0',
-        template: '0',
-        type: '1',
-        time: '',
-        frequency: 'month',
+        // @liuhaoyi;
+        target: props.values.target,
+        template: props.values.template,
+        type: props.values.type,
+        time: props.values.time,
+        frequency: props.values.frequency,
       },
       currentStep: 0,
     };
@@ -172,6 +182,8 @@ class UpdateForm extends PureComponent {
         <FormItem key="time" {...this.formLayout} label="开始时间">
           {form.getFieldDecorator('time', {
             rules: [{ required: true, message: '请选择开始时间！' }],
+            // liuhaoyi; 新增赋值操作；
+            initialValue: moment(formVals.time),
           })(
             <DatePicker
               style={{ width: '100%' }}
@@ -274,8 +286,9 @@ class UpdateForm extends PureComponent {
 }
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ rule, loading }) => ({
+@connect(({ rule, loading, valueText }) => ({
   rule,
+  valueTextlist: valueText.valueTextlist,
   loading: loading.models.rule,
 }))
 @Form.create()
@@ -313,23 +326,23 @@ class TableList extends PureComponent {
       filters: [
         {
           text: status[0],
-          value: 0,
+          value: statusMap[0],
         },
         {
           text: status[1],
-          value: 1,
+          value: statusMap[1],
         },
         {
           text: status[2],
-          value: 2,
+          value: statusMap[2],
         },
         {
           text: status[3],
-          value: 3,
+          value: statusMap[3],
         },
       ],
       render(val) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
+        return <Badge status={val} text={val} />;
       },
     },
     {
@@ -355,6 +368,13 @@ class TableList extends PureComponent {
     dispatch({
       type: 'rule/fetch',
     });
+    // @liuhaoyi;
+    dispatch({
+      type: 'valueText/fetch',
+      payload: {
+        type: 'status',
+      },
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -376,6 +396,8 @@ class TableList extends PureComponent {
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
+    // @liuhaoyi new add
+    queryParams = params;
 
     dispatch({
       type: 'rule/fetch',
@@ -393,6 +415,8 @@ class TableList extends PureComponent {
     this.setState({
       formValues: {},
     });
+    // @liuhaoyi new add
+    queryParams = {};
     dispatch({
       type: 'rule/fetch',
       payload: {},
@@ -422,6 +446,7 @@ class TableList extends PureComponent {
             this.setState({
               selectedRows: [],
             });
+            callback(dispatch, queryParams)();
           },
         });
         break;
@@ -446,12 +471,19 @@ class TableList extends PureComponent {
 
       const values = {
         ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+        // updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+        // @liuhaoyi
+        updatedAt: fieldsValue.updatedAt
+          ? fieldsValue.updatedAt.format('YYYY-MM-DD')
+          : fieldsValue.updatedAt,
       };
 
       this.setState({
         formValues: values,
       });
+
+      // @liuhaoyi new add;
+      queryParams = values;
 
       dispatch({
         type: 'rule/fetch',
@@ -480,6 +512,8 @@ class TableList extends PureComponent {
       payload: {
         desc: fields.desc,
       },
+      // @liuhaoyi new add
+      callback: callback(dispatch, queryParams),
     });
 
     message.success('添加成功');
@@ -494,11 +528,15 @@ class TableList extends PureComponent {
       payload: {
         query: formValues,
         body: {
-          name: fields.name,
-          desc: fields.desc,
-          key: fields.key,
+          // name: fields.name,
+          // desc: fields.desc,
+          // key: fields.key,
+          // @liuhaoyi
+          ...fields,
         },
       },
+      // @liuhaoyi new add
+      callback: callback(dispatch, queryParams),
     });
 
     message.success('配置成功');
@@ -508,6 +546,8 @@ class TableList extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      // @liuhaoyi new add
+      valueTextlist,
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -521,8 +561,11 @@ class TableList extends PureComponent {
             <FormItem label="使用状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+                  {/* <Option value="0">关闭</Option>
+                  <Option value="1">运行中</Option> */}
+                  {// @liuhaoyi new edit
+                  valueTextlist &&
+                    valueTextlist.map(item => <Option value={item.value}>{item.text}</Option>)}
                 </Select>
               )}
             </FormItem>
@@ -576,8 +619,17 @@ class TableList extends PureComponent {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="更新日期">
-              {getFieldDecorator('date')(
+              {/* {getFieldDecorator('date')(
                 <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
+              )} */}
+              {/* @liuhaoyi */}
+              {/* {getFieldDecorator('date')( */}
+              {getFieldDecorator('updatedAt')(
+                <DatePicker
+                  style={{ width: '100%' }}
+                  format="YYYY-MM-DD"
+                  placeholder="请输入更新日期"
+                />
               )}
             </FormItem>
           </Col>

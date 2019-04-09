@@ -33,7 +33,7 @@ const SelectOption = Select.Option;
 const { Search, TextArea } = Input;
 
 @connect(({ list, loading }) => ({
-  list,
+  data: list.data,
   loading: loading.models.list,
 }))
 @Form.create()
@@ -111,9 +111,31 @@ class BasicList extends PureComponent {
     });
   };
 
+  handlePagination = (currentPage, pageSize) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'list/fetch',
+      payload: {
+        currentPage,
+        pageSize,
+      },
+    });
+  };
+
+  handleShowSizeChange = (currentPage, pageSize) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'list/fetch',
+      payload: {
+        currentPage,
+        pageSize,
+      },
+    });
+  };
+
   render() {
     const {
-      list: { list },
+      data: { list, pagination },
       loading,
     } = this.props;
     const {
@@ -160,8 +182,11 @@ class BasicList extends PureComponent {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      pageSize: 5,
-      total: 50,
+      // pageSize: 5,
+      // total: 50,
+      ...pagination,
+      onChange: this.handlePagination,
+      onShowSizeChange: this.handleShowSizeChange,
     };
 
     const ListContent = ({ data: { owner, createdAt, percent, status } }) => (

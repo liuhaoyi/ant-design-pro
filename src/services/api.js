@@ -124,3 +124,19 @@ export async function queryNotices(params = {}) {
 export async function getFakeCaptcha(mobile) {
   return request(`/api/captcha?mobile=${mobile}`);
 }
+/**
+ * @liuhaoyi
+ * 获取当前登录用户对应的功能菜单。springboot依据token获取userName。
+ */
+export async function queryMenus() {
+  return request('/api/menus');
+}
+
+/**
+ * @liuhaoyi
+ * 依据类型获取下拉选择列表数据；
+ */
+export async function queryValueText(params) {
+  const { type } = params;
+  return request(`/api/valueText/${type}`);
+}

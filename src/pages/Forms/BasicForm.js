@@ -190,7 +190,7 @@ class BasicForms extends PureComponent {
               help={<FormattedMessage id="form.public.label.help" />}
             >
               <div>
-                {getFieldDecorator('public', {
+                {getFieldDecorator('public1', {
                   initialValue: '1',
                 })(
                   <Radio.Group>
@@ -212,7 +212,7 @@ class BasicForms extends PureComponent {
                       placeholder={formatMessage({ id: 'form.publicUsers.placeholder' })}
                       style={{
                         margin: '8px 0',
-                        display: getFieldValue('public') === '2' ? 'block' : 'none',
+                        display: getFieldValue('public1') === '2' ? 'block' : 'none',
                       }}
                     >
                       <Option value="1">
