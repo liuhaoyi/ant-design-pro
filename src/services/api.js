@@ -140,3 +140,10 @@ export async function queryValueText(params) {
   const { type } = params;
   return request(`/api/valueText/${type}`);
 }
+
+export async function fakeAccountLoginAuth(params) {
+  return request('/api/login/auth', {
+    method: 'POST',
+    data: params,
+  });
+}

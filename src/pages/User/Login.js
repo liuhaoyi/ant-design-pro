@@ -18,6 +18,21 @@ class LoginPage extends Component {
     autoLogin: true,
   };
 
+  componentDidMount() {
+    window.oAuth = this.oAuth;
+  }
+
+  oAuth = code => {
+    const { dispatch } = this.props;
+    // 登录；
+    dispatch({
+      type: 'login/auth',
+      payload: {
+        code,
+      },
+    });
+  };
+
   onTabChange = type => {
     this.setState({ type });
   };
@@ -52,6 +67,10 @@ class LoginPage extends Component {
         },
       });
     }
+  };
+
+  handWeiboClick = () => {
+    console.log('----');
   };
 
   changeAutoLogin = e => {
@@ -158,12 +177,26 @@ class LoginPage extends Component {
             <FormattedMessage id="app.login.sign-in-with" />
             <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
             <Icon type="taobao-circle" className={styles.icon} theme="outlined" />
-            <Icon type="weibo-circle" className={styles.icon} theme="outlined" />
+            <Icon
+              type="weibo-circle"
+              className={styles.icon}
+              theme="outlined"
+              onClick={this.handWeiboClick}
+            />
             <Link className={styles.register} to="/user/register">
               <FormattedMessage id="app.login.signup" />
             </Link>
           </div>
         </Login>
+        <div>
+          <iframe
+            frameBorder="0"
+            width="600px"
+            height="400px"
+            title="title"
+            src="https://api.weibo.com/oauth2/authorize?client_id=3274457296&response_type=code&redirect_uri=http://221917tf79.imwork.net:8000/user/weibo"
+          />
+        </div>
       </div>
     );
   }
