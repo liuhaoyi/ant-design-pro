@@ -73,9 +73,18 @@ class LoginPage extends Component {
   handWeiboClick = oAuthType => {
     console.log('----');
     // this.handleModalVisible(true);
+    const iWidth = 800; // 弹出窗口的宽度;
+    const iHeight = 600; // 弹出窗口的高度;
+    const iTop = (window.screen.availHeight - iHeight) / 2; // 获得窗口的垂直位置;
+    const iLeft = (window.screen.availWidth - iWidth) / 2; // 获得窗口的水平位置;
+    const name = '认证';
     if (oAuthType === 'weibo') {
+      const url =
+        'https://api.weibo.com/oauth2/authorize?client_id=3274457296&response_type=code&redirect_uri=http://221917tf79.imwork.net:8000/user/weibo';
       window.open(
-        'https://api.weibo.com/oauth2/authorize?client_id=3274457296&response_type=code&redirect_uri=http://221917tf79.imwork.net:8000/user/weibo'
+        url,
+        name,
+        `height=${iHeight},width=${iWidth},top=${iTop},left=${iLeft},toolbar=no,menubar=no,scrollbars=auto,resizeable=no,location=no,status=no`
       );
     } else if (oAuthType === 'taobao') {
       alert('taobao');
