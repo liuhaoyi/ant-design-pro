@@ -5,14 +5,17 @@ class Oauth extends Component {
     // 获取code
     const {
       location: {
-        query: { code },
+        query: { code, error },
       },
     } = this.props;
-    window.top.oAuth(code);
+    if (!error) {
+      window.opener.oAuth('weibo', code);
+    }
+    window.close();
   }
 
   render() {
-    return <div>continue....</div>;
+    return <div />;
   }
 }
 

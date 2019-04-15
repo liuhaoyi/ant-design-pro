@@ -22,12 +22,13 @@ class LoginPage extends Component {
     window.oAuth = this.oAuth;
   }
 
-  oAuth = code => {
+  oAuth = (oAuthType, code) => {
     const { dispatch } = this.props;
     // 登录；
     dispatch({
       type: 'login/auth',
       payload: {
+        oAuthType,
         code,
       },
     });
@@ -69,8 +70,18 @@ class LoginPage extends Component {
     }
   };
 
-  handWeiboClick = () => {
+  handWeiboClick = oAuthType => {
     console.log('----');
+    // this.handleModalVisible(true);
+    if (oAuthType === 'weibo') {
+      window.open(
+        'https://api.weibo.com/oauth2/authorize?client_id=3274457296&response_type=code&redirect_uri=http://221917tf79.imwork.net:8000/user/weibo'
+      );
+    } else if (oAuthType === 'taobao') {
+      alert('taobao');
+    } else if (oAuthType === 'alipay') {
+      alert('alipay');
+    }
   };
 
   changeAutoLogin = e => {
@@ -175,28 +186,29 @@ class LoginPage extends Component {
           </Submit>
           <div className={styles.other}>
             <FormattedMessage id="app.login.sign-in-with" />
-            <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
-            <Icon type="taobao-circle" className={styles.icon} theme="outlined" />
+            <Icon
+              type="alipay-circle"
+              className={styles.icon}
+              theme="outlined"
+              onClick={() => this.handWeiboClick('alipay')}
+            />
+            <Icon
+              type="taobao-circle"
+              className={styles.icon}
+              theme="outlined"
+              onClick={() => this.handWeiboClick('taobao')}
+            />
             <Icon
               type="weibo-circle"
               className={styles.icon}
               theme="outlined"
-              onClick={this.handWeiboClick}
+              onClick={() => this.handWeiboClick('weibo')}
             />
             <Link className={styles.register} to="/user/register">
               <FormattedMessage id="app.login.signup" />
             </Link>
           </div>
         </Login>
-        <div>
-          <iframe
-            frameBorder="0"
-            width="600px"
-            height="400px"
-            title="title"
-            src="https://api.weibo.com/oauth2/authorize?client_id=3274457296&response_type=code&redirect_uri=http://221917tf79.imwork.net:8000/user/weibo"
-          />
-        </div>
       </div>
     );
   }
