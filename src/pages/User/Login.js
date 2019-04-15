@@ -79,8 +79,9 @@ class LoginPage extends Component {
     const iLeft = (window.screen.availWidth - iWidth) / 2; // 获得窗口的水平位置;
     const name = '认证';
     if (oAuthType === 'weibo') {
-      const url =
-        'https://api.weibo.com/oauth2/authorize?client_id=3274457296&response_type=code&redirect_uri=http://221917tf79.imwork.net:8000/user/weibo';
+      const url = `https://api.weibo.com/oauth2/authorize?client_id=3274457296&response_type=code&redirect_uri=${
+        window.location.origin
+      }/user/weibo`;
       window.open(
         url,
         name,
