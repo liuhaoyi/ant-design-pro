@@ -70,7 +70,7 @@ class LoginPage extends Component {
     }
   };
 
-  handWeiboClick = oAuthType => {
+  handOAuthClick = oAuthType => {
     console.log('----');
     // this.handleModalVisible(true);
     const iWidth = 800; // 弹出窗口的宽度;
@@ -200,19 +200,19 @@ class LoginPage extends Component {
               type="alipay-circle"
               className={styles.icon}
               theme="outlined"
-              onClick={() => this.handWeiboClick('alipay')}
+              onClick={() => this.handOAuthClick('alipay')}
             />
             <Icon
               type="taobao-circle"
               className={styles.icon}
               theme="outlined"
-              onClick={() => this.handWeiboClick('taobao')}
+              onClick={() => this.handOAuthClick('taobao')}
             />
             <Icon
               type="weibo-circle"
               className={styles.icon}
               theme="outlined"
-              onClick={() => this.handWeiboClick('weibo')}
+              onClick={() => this.handOAuthClick('weibo')}
             />
             <Link className={styles.register} to="/user/register">
               <FormattedMessage id="app.login.signup" />
